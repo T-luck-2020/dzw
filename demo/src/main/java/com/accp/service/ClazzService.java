@@ -16,7 +16,7 @@ public class ClazzService {
 	@Autowired         
 	ClazzMapper map; 
 	/*
-	 * 你是条狗
+	 * 假两件记录
 	 * */
 	public List<Clazz> find(){
 		return map.selectByExample(null);
