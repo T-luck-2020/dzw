@@ -15,6 +15,9 @@ import com.accp.domain.ClazzExample;
 public class ClazzService {
 	@Autowired         
 	ClazzMapper map; 
+	/*
+	 * 你是条狗
+	 * */
 	public List<Clazz> find(){
 		return map.selectByExample(null);
 	}
