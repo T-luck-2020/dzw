@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>学生管理系统</title>
+</head>
+<body>
+<th:>
+	<a href="/student/toadd">新增</a>
+	<table border="1">
+		<tr>
+			<td>姓名</td>
+			<td>年龄</td>
+			<td>操作</td>
+		</tr>
+		<tr th:each="item,index : ${list}">
+			<td th:text="${item.name}"></td>
+			<td th:text="${item.age}"></td>
+			<td><a th:href="@{http://127.0.0.1:8888/student/del(id=${item.id})}">删除</a><a th:href="@{http://127.0.0.1:8888/student/findbyid(id=${item.id})}">修改</a></td>
+		</tr>
+	</table>
+</body>
+</html>

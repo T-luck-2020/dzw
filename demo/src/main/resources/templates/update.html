@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>修改页面</title>
+</head>
+<body>
+	<form action="http://127.0.0.1:8888/student/update" method="get">
+		姓名<input type="text" th:value="${stu.name}" name="name">
+		年龄<input type="text" th:value="${stu.age}" name="age">
+		<input type="hidden" th:value="${stu.id}" name="id">
+		<button>保存</button>
+	</form>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>分页</title>
+<link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}"/>
+</head>
+<body>
+<div class="con">
+	<span @click="Openview()" class="btn btn-danger btn-xs">增加</span>
+	<span @click="remove()" class="btn btn-danger btn-xs">删除</span>
+	<table class="table">
+		<tr>
+			<td><input   v-model="danji" type="checkbox">编号</td>
+			<td>姓名</td>
+			<td>年龄</td>
+			<td>班级</td>
+		</tr>
+		<tr v-for="item in page.list">
+			<td><input type="checkbox" v-model="stuid" :value="item.id">{{item.id}}</td>
+			<td>{{item.name}}</td>
+			<td>{{item.age}}</td>
+			<td>{{item.clz.name}}</td>
+		</tr>
+	</table>
+	<div>
+		<nav aria-label="...">
+			<ul class="pager">
+				<li><a href="javascript:void(0)" @click="getPage(1)">首页</a></li>
+				<li><a href="javascript:void(0)" @click="getPage(page.prePage)">上一页</a></li>
+				<li><a href="javascript:void(0)" @click="getPage(page.nextPage)">下一页</a></li>
+				<li><a href="javascript:void(0)" @click="getPage(page.pages)">尾页</a></li>
+				<li>{{page.pageNum}}/{{page.pages}}</li>
+			</ul>
+		</nav>
+	</div>
+	
+	<div id="createModal" class="modal">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h3>班级添加</h3>
+						</div>
+						<div class="modal-body">
+							<div class="form-horizontal">
+								<div class="form-group">
+									<label class="col-xs-2 control-label">班级名称：</label>
+									<div class="col-xs-10">
+										<input v-model="clz.name" class="form-control">
+									</div>
+								</div>
+							</div>
+							<div class="form-inline">
+									<p>学生信息<button @click="createStu" class="btn btn-default">增加</button></p>
+									<div v-for="stu in slist">
+										<div class="form-group">
+											<label class="control-label">名称：</label>
+											<input v-model="stu.name" class="form-control">
+										</div>
+										<div class="form-group">
+											<label class="control-label">年龄：</label>
+											<input v-model="stu.age" class="form-control">
+										</div>
+										<div class="form-group">
+											<label class="control-label">性别：</label>
+											<input type="text" v-model="stu.sex" class="form-control">
+										</div>
+									</div>
+								</div>
+						</div>
+						<div class="modal-footer">
+							<button class="btn btn-danger" @click="closeModal('editModal')">关闭</button>
+							<button class="btn btn-primary" @click="save()">保存</button>
+						</div>
+					</div>
+				</div>
+			</div>
+	
+	
+	
+</div>
+	<script th:src="@{/js/jquery-1.12.4.js}" ></script>
+	<script th:src="@{/js/vue.js}" ></script>
+	<script th:src="@{/js/bootstrap.min.js}" ></script>
+	<script type="text/javascript">
+				var vm=new Vue({
+				el:".con",
+				data(){
+					return{
+						page:{},
+						danji:false,
+						stuid:[],
+						clz:{},
+						slist:[]
+					}
+				},methods:{
+					getPage(currentPage){
+						var that=this;
+						$.ajax({
+							url:"[[@{/student/ajax}]]?pageSize=2&pageNum="+currentPage,
+							type:"get",
+							success:function(result){
+								console.log(result)
+								that.page=result;
+							}
+						});
+					},
+					remove(){
+						var that=this;
+						$.ajax({
+							url:"[[@{/student/remove}]]",
+							data:{
+								id:that.stuid.join(",")
+							},
+							success:function(result){
+								if(result=="00000"){
+									alert("删除成功");
+									that.getPage(1);
+								}
+							}
+						});
+					},
+					Openview(){
+						$("#createModal").modal("show");
+					},
+					createStu(){
+						this.slist.push({})
+					},
+					save(){
+						var that=this;
+						that.clz.slist = that.slist;
+						var str = JSON.stringify(that.clz);
+						alert(str)
+						$.ajax({
+							url:"[[@{/student/jia}]]",
+							data:str,
+							method:"post",
+							dataType:"text",
+							contentType:"application/json;charset=utf-8",
+							success:function(result){
+								if(result=="00000"){
+									alert("新增成功");
+									that.getPage(1);
+								}
+							}
+						});
+					}
+				},created(){
+					this.getPage(1);
+				},
+				watch:{
+					danji(value){
+						var that=this;
+						//consol.log(value)
+						if(value){
+							that.stuid=that.page.list.map(item=>item.id)
+						}
+						else{
+							that.stuid=[];
+						}
+					}
+				}
+			})
+		</script>
+</body>
+</html>

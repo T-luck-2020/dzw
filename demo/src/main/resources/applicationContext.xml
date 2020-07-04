@@ -1,0 +1,49 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.3.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+	
+	<!-- 加载业务层组件（类）构建对象 -->
+	<context:component-scan base-package="com.accp.service"></context:component-scan>
+	<!-- 加载配置文件：数据库连接配置文件 -->
+	<context:property-placeholder location="classpath:db.property"/>
+	
+	<!-- 让spring创建数据源对象 -->
+	<bean id="dataSource" class="org.apache.tomcat.dbcp.dbcp2.BasicDataSource">
+		<property name="username" value="root"></property>
+		<property name="password" value="root"></property>
+		<property name="url" value="jdbc:mysql://localhost:3306/myschool?useUnicode=true&amp;characterEncoding=utf-8&amp;allowMutilQueries=true&amp;serverTimezone=UTC"></property>
+		<property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
+	</bean>
+	
+	<!-- 构建mybatis工厂对象 -->
+	<bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 加载mybatis核心配置文件 -->
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+		<!-- 加载mapper（对应实体和dao）配置文件 -->
+		<property name="mapperLocations" value="classpath:mapper/*.xml"></property>
+		<!-- 通过哪个连接数据库 -->
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- 用于创建mapper对应对象 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.accp.dao"></property>
+		<property name="sqlSessionFactoryBeanName" value="sessionFactory"></property>
+	</bean>
+	<!-- 事务管理对象 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- 开启注解型事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+</beans>
